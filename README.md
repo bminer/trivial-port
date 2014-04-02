@@ -13,7 +13,7 @@ Checkout [this StackOverflow post](http://stackoverflow.com/questions/5728691/no
 
 Why?
 ----
-Mostly because node-serialport and other C/C++ Node add-ons are a bit buggy IMHO.
+Node doesn't really support talking to serial ports at the moment.
 
 Usage
 -----
@@ -32,7 +32,7 @@ for reading from and writing to a serial port.
 
 This implementation uses [`stty`](http://www.freebsd.org/cgi/man.cgi?query=stty&sektion=1)
 to initialize the stream; then, it simply reads from or writes to the serial
-port using the [`fs` Node.js library](http://nodejs.org/api/fs.html).
+port using the [`tty` Node.js library](http://nodejs.org/api/tty.html).
 
 
 ### `var port = new SerialPort(options);`
