@@ -128,7 +128,7 @@ SerialPort.prototype.initialize = function(cb) {
 			//Set a timer just in case the process hangs
 			if(self.initTimeout != null) {
 				initTimer = setTimeout(function() {
-					child.process.removeListeners("exit", exitListener);
+					child.removeListeners("exit", exitListener);
 					child.kill("SIGKILL");
 					fs.closeSync(readFd);
 					fs.closeSync(writeFd);
