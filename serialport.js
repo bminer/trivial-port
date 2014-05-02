@@ -112,54 +112,42 @@ SerialPort.prototype.initialize = function(cb) {
 			return cb(new Error("SerialPort: Invalid parity: " + self.parity) );
 	}
 	//Get the file descriptors for reading/writing the SerialPort
-	fs.open(self.serialPort, "r", function(err, readFd) {
+	fs.open(self.serialPort, "r+", function(err, readFd) {
 		if(err) {
 			return cb(err);
 		}
-		fs.open(self.serialPort, "w", function(err, writeFd) {
-			if(err) {
-				return fs.close(readFd, function() {
-					cb(err);
-				});
+		//Spawn stty process
+		var child = child_process.spawn(self.sttyPath, args),
+			initTimer;
+		//Set a timer just in case the process hangs
+		if(self.initTimeout != null) {
+			initTimer = setTimeout(function() {
+				child.removeListeners("exit", exitListener);
+				child.kill("SIGKILL");
+				fs.closeSync(readFd);
+				cb(new Error("SerialPort: stty did not complete in a timely manner") );
+			}, self.initTimeout);
+		}
+		child.on("exit", exitListener);
+		function exitListener(code, signal) {
+			clearTimeout(initTimer);
+			if(code === 0) {
+				openSerialPortDevice(readFd);
 			}
-			//Spawn stty process
-			var child = child_process.spawn(self.sttyPath, args),
-				initTimer;
-			//Set a timer just in case the process hangs
-			if(self.initTimeout != null) {
-				initTimer = setTimeout(function() {
-					child.removeListeners("exit", exitListener);
-					child.kill("SIGKILL");
-					fs.closeSync(readFd);
-					fs.closeSync(writeFd);
-					cb(new Error("SerialPort: stty did not complete in a timely manner") );
-				}, self.initTimeout);
+			else {
+				fs.closeSync(readFd);
+				cb(new Error("SerialPort: stty returned exit code " + code) );
 			}
-			child.on("exit", exitListener);
-			function exitListener(code, signal) {
-				clearTimeout(initTimer);
-				if(code === 0) {
-					openSerialPortDevice(readFd, writeFd);
-				}
-				else {
-					fs.closeSync(readFd);
-					fs.closeSync(writeFd);
-					cb(new Error("SerialPort: stty returned exit code " + code) );
-				}
-			}
-		});
+		}
 	})
 	//Once the process exits successfully, we call this function
-	function openSerialPortDevice(readFd, writeFd) {
+	function openSerialPortDevice(readFd) {
 		//Save TTY streams
 		self._readStream = new tty.ReadStream(readFd);
 		self._readStream.setRawMode(true);
-		self._writeStream = new tty.WriteStream(writeFd);
+		self._writeStream = self._readStream;
 		//Setup error handlers
 		self._readStream.on("error", function(err) {
-			self.emit("error", err);
-		});
-		self._writeStream.on("error", function(err) {
 			self.emit("error", err);
 		});
 		//Setup read event handlers
@@ -200,7 +188,6 @@ SerialPort.prototype.close = function(cb) {
 	}
 	//Close both ReadStream and WriteStream Sockets
 	self._readStream.end();
-	self._writeStream.end();
 	self._readStream = self._writeStream = null;
 	cb(null);
 };
