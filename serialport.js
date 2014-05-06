@@ -122,7 +122,7 @@ SerialPort.prototype.initialize = function(cb) {
 		//Set a timer just in case the process hangs
 		if(self.initTimeout != null) {
 			initTimer = setTimeout(function() {
-				child.removeListeners("exit", exitListener);
+				child.removeListener("exit", exitListener);
 				child.kill("SIGKILL");
 				fs.closeSync(readFd);
 				cb(new Error("SerialPort: stty did not complete in a timely manner") );
