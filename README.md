@@ -49,6 +49,7 @@ initialization. The valid attributes for the options object are the following:
 - `sttyPath` - the path to the `stty` command (defaults to /bin/stty)
 - `initTimeout` - maximum initialization duration (defaults to 10 seconds);
 	set to `null` to allow an infinite amount of time
+- customArgs - an array of additional arguments to pass to the `stty` command
 
 ### `port.initialize([cb])`
 
