@@ -22,6 +22,7 @@ initialization. The valid attributes for the options object are the following:
 - sttyPath - the path to the `stty` command (defaults to /bin/stty)
 - initTimeout - maximum initialization duration (defaults to 10 seconds);
 	set to `null` to allow an infinite amount of time
+- sttyArgs - an array of additional arguments to pass to the `stty` command
 */
 function SerialPort(opts) {
 	stream.Duplex.call(this, {
@@ -37,6 +38,7 @@ function SerialPort(opts) {
 		opts.initTimeout = 10000;
 	}
 	this.initTimeout = opts.initTimeout;
+	this.sttyArgs = opts.sttyArgs || [];
 	this._readStream = null;
 	this._writeStream = null;
 }
@@ -110,6 +112,10 @@ SerialPort.prototype.initialize = function(cb) {
 			break;
 		default:
 			return cb(new Error("SerialPort: Invalid parity: " + self.parity) );
+	}
+	//sttyArgs
+	if(self.sttyArgs instanceof Array){
+		args = args.concat(self.sttyArgs);
 	}
 	//Get the file descriptors for reading/writing the SerialPort
 	fs.open(self.serialPort, "r+", function(err, readFd) {
