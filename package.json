@@ -1,6 +1,6 @@
 {
 	"name": "trivial-port",
-	"version": "0.2.3",
+	"version": "0.3.0",
 	"description": "Node.js library to open serial ports for reading and writing",
 	"main": "serialport.js",
 	"scripts": {
@@ -16,6 +16,9 @@
 		"node"
 	],
 	"author": "Blake Miner <miner.blake@gmail.com>",
+	"contributors": [
+		"Mark Buster"
+	],
 	"engines": {
 		"node": ">=0.8"
 	},
