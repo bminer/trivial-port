@@ -167,7 +167,7 @@ SerialPort.prototype.initialize = function(cb) {
 			self.emit("close");
 		});
 		//Emit open event
-		self.emit("open");
+		self.emit("open",self._readStream);
 	}
 };
 
