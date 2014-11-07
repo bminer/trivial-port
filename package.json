@@ -20,8 +20,9 @@
 		"Mark Buster"
 	],
 	"engines": {
-		"node": ">=0.8"
+		"node": ">=0.8.8"
 	},
+	"os": ["!win32"],
 	"license": "MIT",
 	"bugs": {
 		"url": "https://github.com/bminer/trivial-port/issues"
