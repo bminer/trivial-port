@@ -39,6 +39,7 @@ function SerialPort(opts) {
 	}
 	this.initTimeout = opts.initTimeout;
 	this.sttyArgs = opts.sttyArgs || [];
+	this._fd = null;
 	this._readStream = null;
 	this._writeStream = null;
 }
@@ -56,7 +57,7 @@ SerialPort.prototype.initialize = function(cb) {
 		};
 	}
 	//Check to see if initialization is complete
-	if(self._readStream || self._writeStream) {
+	if(self._readStream || self._writeStream || self._fd != null) {
 		return cb(new Error("SerialPort: Please close the port before reinitializing.") );
 	}
 	//Device name
@@ -119,6 +120,7 @@ SerialPort.prototype.initialize = function(cb) {
 	}
 	//Get the file descriptors for reading/writing the SerialPort
 	fs.open(self.serialPort, "r+", function(err, readFd) {
+		self._fd = readFd;
 		if(err) {
 			return cb(err);
 		}
@@ -195,7 +197,8 @@ SerialPort.prototype.close = function(cb) {
 	//Close both ReadStream and WriteStream Sockets
 	self._readStream.end();
 	self._readStream = self._writeStream = null;
-	cb(null);
+	fs.close(self._fd, cb);
+	self._fd = null;
 };
 
 function whenOpen(self, cb) {
