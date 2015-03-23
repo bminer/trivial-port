@@ -195,10 +195,16 @@ SerialPort.prototype.close = function(cb) {
 		};
 	}
 	//Close both ReadStream and WriteStream Sockets
-	self._readStream.end();
+	if(self._readStream != null) {
+		self._readStream.end();
+	}
 	self._readStream = self._writeStream = null;
-	fs.close(self._fd, cb);
-	self._fd = null;
+	if(self._fd != null) {
+		fs.close(self._fd, cb);
+		self._fd = null;
+	} else {
+		cb(null);
+	}
 };
 
 function whenOpen(self, cb) {
