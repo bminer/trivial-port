@@ -3,6 +3,12 @@ trivial-port
 
 Node.js library to open serial ports for reading and writing
 
+DEPRECATION NOTICE
+------------------
+This lib probably doesn't work with Node 1 or higher.  It was originally designed for Node v0.10 or v0.12.  [node-serialport](https://github.com/EmergingTechnologyAdvisors/node-serialport) has come a long way in terms of reliability and stability, so I'd recommend using that lib instead.
+
+----
+
 Operating System Support
 ------------------------
 - **Linux** - Works
